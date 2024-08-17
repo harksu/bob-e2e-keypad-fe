@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
+import JSEncrypt from 'jsencrypt';
 
 const PageContainer = styled.div`
   display: flex;
@@ -49,6 +50,12 @@ export default function Page() {
   const [keyList, setKeyList] = useState([]);
   const [inputValues, setInputValues] = useState([]);
 
+  const PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtkLA7dcyLqz4M6BS/XZiwMee85fjwskmxfZVN/qI854Sa4mlU/5Rse0HcNY0QoF+J3kQF3xWpTKLfw2p5pztsALLN6gsO2m4qLIOk3eNR+hVL2Rh4dc8MAhuXfoTGrfMjXouiy05rYgVpqIRRCjzMVGYnJ7arZ6rMN73nRxd0I9RVbe3LXEuHrBysxjfXae6z+qb+1Rp9MKnwiDuKC/i2lqqqmV9p/8OuY+qUzsMCtU8URS8kvw/bkg90TEOHzjKWrRIYRcQQkdJ8KuX3/lV1jBBgIQRfmQVTFUnkV5XBZw9jXYTsz6Bcp4MNWUlwHQIebAM8vMZ6/nH9p4OdETA5wIDAQAB"
+  
+  const encrypt = new JSEncrypt();
+  encrypt.setPublicKey(PUBLIC_KEY)
+
+
   const fetchKeyPadData = () => {
     axios
       .get("/api/keypad")
@@ -64,6 +71,7 @@ export default function Page() {
     fetchKeyPadData();
   }, []);
 
+  
   const handleClick = (index) => {
     const clickedKey = keyList[index];
 
@@ -72,8 +80,16 @@ export default function Page() {
 
       if (inputValues.length === 5) {
         setTimeout(() => {
-          window.alert(`${[...inputValues, clickedKey].join('\n')}`);
-          fetchKeyPadData(); 
+          const userInput = `${[...inputValues, clickedKey].join()}`
+          window.alert(`${[...inputValues, clickedKey].join()}`);
+          console.log(userInput)
+          const encryptedUserInput = encrypt.encrypt(userInput || "");
+          //여기서 암호화 한 다음에 보내야됨 티비 키길이 2048
+          axios.post("api/send-keypad-userInput",{encryptedUserInput}).then((res)=>{
+            console.log(res);
+            fetchKeyPadData(); 
+          }
+        ).catch((err)=>console.log(err))
         }, 100);
       }
     }
