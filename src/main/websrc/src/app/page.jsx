@@ -49,6 +49,8 @@ export default function Page() {
   const [base64Image, setBase64Image] = useState(null);
   const [keyList, setKeyList] = useState([]);
   const [inputValues, setInputValues] = useState([]);
+  const [id,setId] = useState("");
+  //평상시 같으면 이렇게 코드 절대 안짜는데 시간 없으니까 일단
 
   // const PUBLIC_KEY = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtkLA7dcyLqz4M6BS/XZiwMee85fjwskmxfZVN/qI854Sa4mlU/5Rse0HcNY0QoF+J3kQF3xWpTKLfw2p5pztsALLN6gsO2m4qLIOk3eNR+hVL2Rh4dc8MAhuXfoTGrfMjXouiy05rYgVpqIRRCjzMVGYnJ7arZ6rMN73nRxd0I9RVbe3LXEuHrBysxjfXae6z+qb+1Rp9MKnwiDuKC/i2lqqqmV9p/8OuY+qUzsMCtU8URS8kvw/bkg90TEOHzjKWrRIYRcQQkdJ8KuX3/lV1jBBgIQRfmQVTFUnkV5XBZw9jXYTsz6Bcp4MNWUlwHQIebAM8vMZ6/nH9p4OdETA5wIDAQAB"
   const PUBLIC_KEY = `-----BEGIN PUBLIC KEY-----
@@ -72,6 +74,7 @@ MVGYnJ7arZ6rMN73nRxd0I9RVbe3LXEuHrBysxjfXae6z+qb+1Rp9MKnwiDuKC/i
         setBase64Image(res.data.base64Image);
         setKeyList(res.data.keyList); 
         setInputValues([]); 
+        setId(res.data.id);
       })
       .catch((e) => console.log(e));
   };
@@ -94,7 +97,7 @@ MVGYnJ7arZ6rMN73nRxd0I9RVbe3LXEuHrBysxjfXae6z+qb+1Rp9MKnwiDuKC/i
           console.log(userInput)
           const encryptedUserInput = encrypt.encrypt(userInput || "");
           //여기서 암호화 한 다음에 보내야됨 티비 키길이 2048
-          axios.post("api/send-keypad-userInput",{encryptedUserInput}).then((res)=>{
+          axios.post("api/send-keypad-userInput",{"encryptedUserInput":encryptedUserInput,"receivedId":id}).then((res)=>{
             console.log(res);
             fetchKeyPadData(); 
           }
