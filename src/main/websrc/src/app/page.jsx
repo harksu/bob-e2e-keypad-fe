@@ -98,8 +98,10 @@ MVGYnJ7arZ6rMN73nRxd0I9RVbe3LXEuHrBysxjfXae6z+qb+1Rp9MKnwiDuKC/i
           const encryptedUserInput = encrypt.encrypt(userInput || "");
           //여기서 암호화 한 다음에 보내야됨 티비 키길이 2048
           axios.post("api/send-keypad-userInput",{"encryptedUserInput":encryptedUserInput,"receivedId":id}).then((res)=>{
+            //유저 검증을 위해서 받았던 아이디 그대로 보내기
             console.log(res);
             fetchKeyPadData(); 
+            window.alert("입력값을 암호화하여 전송에 성공했습니다.");
           }
         ).catch((err)=>console.log(err))
         }, 100);
